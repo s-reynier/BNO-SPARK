@@ -23,17 +23,34 @@
 #include <Wire.h>
 
 #include "SparkFun_BNO080_Arduino_Library.h" // Click here to get the library: http://librarymanager/All#SparkFun_BNO080
+
 BNO080 myIMU;
+#define SDA_PIN 27
+#define SCL_PIN 32
+#define POWER_PIN 12
+#define POWER_PIN_STATE HIGH 
 
 void setup()
 {
+  pinMode(POWER_PIN, OUTPUT); 
+  digitalWrite(POWER_PIN, POWER_PIN_STATE);     // turn on POWER
+
+  
   Serial.begin(115200);
+  delay(5000);
   Serial.println();
   Serial.println("BNO080 Read Example");
+Wire.setClock(400000);
+delay(100);
+  Wire.flush();
+  Wire.begin (SDA_PIN, SCL_PIN);
+  //=================================
 
-  Wire.begin();
-
-  myIMU.begin();
+  if (myIMU.begin(0x4A, Wire) == false)
+  {
+    Serial.println("BNO080 not detected at default I2C address. Check your jumpers and the hookup guide. Freezing...");
+    while (1);
+  }
 
   Wire.setClock(400000); //Increase I2C data rate to 400kHz
 
